@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>X Brief</title>
+  <style>
+    :root {
+      --purple: #6B46C1;
+      --purple-light: #9F7AEA;
+      --blue: #3182CE;
+      --blue-light: #63B3ED;
+      --bg: #F7FAFC;
+      --card: #FFFFFF;
+      --text: #1A202C;
+      --muted: #718096;
+      --border: #E2E8F0;
+      --success: #38A169;
+      --warning: #D69E2E;
+      --danger: #E53E3E;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding-bottom: 80px;
+    }
+    .header {
+      background: linear-gradient(135deg, var(--purple), var(--blue));
+      color: white;
+      padding: 20px 16px 16px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .header h1 { font-size: 1.5rem; font-weight: 700; }
+    .header p { font-size: 0.85rem; opacity: 0.9; margin-top: 4px; }
+    .container { max-width: 480px; margin: 0 auto; padding: 16px; }
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      border: 1px solid var(--border);
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 20px;
+      border-radius: 12px;
+      border: none;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s;
+      width: 100%;
+    }
+    .btn:active { opacity: 0.85; }
+    .btn-primary { background: var(--purple); color: white; }
+    .btn-secondary { background: var(--blue); color: white; }
+    .btn-outline {
+      background: white;
+      color: var(--purple);
+      border: 2px solid var(--purple);
+    }
+    .btn-success { background: var(--success); color: white; }
+    .btn-warning { background: var(--warning); color: white; }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-sm { padding: 8px 14px; font-size: 0.875rem; width: auto; }
+    .btn-row { display: flex; gap: 8px; margin-top: 12px; }
+    .btn-row .btn { flex: 1; }
+    label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 6px;
+      margin-top: 14px;
+    }
+    input[type="text"], input[type="date"], select, textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 1rem;
+      background: #fff;
+      color: var(--text);
+    }
+    textarea { min-height: 100px; resize: vertical; }
+    .status-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .status-Recebido { background: #EBF8FF; color: var(--blue); }
+    .status-Em\ produção { background: #FEFCBF; color: #975A16; }
+    .status-Enviado\ para\ aprovação { background: #E9D8FD; color: var(--purple); }
+    .status-Aprovado { background: #C6F6D5; color: #276749; }
+    .pedido-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+    }
+    .pedido-item:last-child { border-bottom: none; }
+    .pedido-item h3 { font-size: 0.95rem; }
+    .pedido-item small { color: var(--muted); font-size: 0.75rem; }
+    .hidden { display: none !important; }
+    .file-list, .audio-list { margin-top: 8px; }
+    .file-chip, .audio-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #EDF2F7;
+      padding: 8px 12px;
+      border-radius: 8px;
+      margin-bottom: 6px;
+      font-size: 0.85rem;
+    }
+    .file-chip a, .audio-chip a { color: var(--blue); text-decoration: none; }
+    .msg {
+      padding: 10px 12px;
+      border-radius: 12px;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+      max-width: 90%;
+    }
+    .msg-client { background: #EBF8FF; margin-right: auto; }
+    .msg-admin { background: #E9D8FD; margin-left: auto; }
+    .msg-system { background: #EDF2F7; text-align: center; font-size: 0.8rem; color: var(--muted); max-width: 100%; }
+    .msg time { display: block; font-size: 0.7rem; color: var(--muted); margin-top: 4px; }
+    .admin-bar {
+      background: #2D3748;
+      color: white;
+      padding: 8px 16px;
+      font-size: 0.8rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .rec-btn {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: var(--danger);
+      color: white;
+      border: none;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 12px auto;
+    }
+    .rec-btn.recording { animation: pulse 1s infinite; }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+    .empty { text-align: center; color: var(--muted); padding: 40px 20px; }
+    .nav-bottom {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: white;
+      border-top: 1px solid var(--border);
+      display: flex;
+      z-index: 40;
+    }
+    .nav-bottom button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      background: none;
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .nav-bottom button.active { color: var(--purple); }
+    #toast {
+      position: fixed;
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #2D3748;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      z-index: 100;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="adminBar" class="admin-bar hidden">
+    <span>Modo Admin</span>
+    <button class="btn btn-sm" style="background:#4A5568;color:white;width:auto;" onclick="exitAdmin()">Sair Admin</button>
+  </div>
+
+  <div class="header">
+    <h1>X Brief</h1>
+    <p>Envie sua ideia e acompanhe a produção.</p>
+  </div>
+
+  <div class="container">
+    <!-- HOME -->
+    <div id="view-home">
+      <button class="btn btn-primary" style="margin-bottom:20px;" onclick="showView('new')">+ Novo pedido</button>
+      <div class="card">
+        <h2 style="font-size:1rem;margin-bottom:8px;">Meus pedidos</h2>
+        <div id="listaPedidos"></div>
+        <div id="emptyPedidos" class="empty hidden">Nenhum pedido ainda.</div>
+      </div>
+      <div style="text-align:center;margin-top:24px;">
+        <button class="btn btn-sm btn-outline" onclick="promptAdmin()">Acesso Admin</button>
+      </div>
+    </div>
+
+    <!-- NEW ORDER -->
+    <div id="view-new" class="hidden">
+      <div class="card">
+        <h2 style="font-size:1.1rem;margin-bottom:4px;">Novo pedido</h2>
+        <label>Título do pedido</label>
+        <input type="text" id="f-titulo" placeholder="Ex: Arte para Instagram">
+
+        <label>Tipo</label>
+        <select id="f-tipo">
+          <option>Arte</option>
+          <option>Vídeo</option>
+          <option>Montagem de Fotos</option>
+          <option>Conteúdo de Culto</option>
+          <option>Telão</option>
+          <option>Outro</option>
+        </select>
+
+        <label>Explique sua ideia</label>
+        <textarea id="f-desc" placeholder="Descreva o que você precisa..."></textarea>
+
+        <label>Áudio</label>
+        <div style="text-align:center;">
+          <button class="rec-btn" id="recBtn" onclick="toggleRec()">🎤</button>
+          <div id="recStatus" style="font-size:0.8rem;color:var(--muted);"></div>
+        </div>
+        <div id="audioPreview" class="audio-list"></div>
+
+        <label>Arquivos</label>
+        <input type="file" id="f-files" multiple accept="image/*,video/*,.pdf,application/pdf" style="margin-bottom:8px;">
+        <div id="filePreview" class="file-list"></div>
+
+        <label>Prazo (opcional)</label>
+        <input type="date" id="f-prazo">
+
+        <label>Observação (opcional)</label>
+        <textarea id="f-obs" placeholder="Observações extras..." style="min-height:60px;"></textarea>
+
+        <div class="btn-row" style="margin-top:20px;">
+          <button class="btn btn-outline" onclick="showView('home')">Cancelar</button>
+          <button class="btn btn-primary" onclick="enviarPedido()">Enviar pedido</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ORDER DETAIL -->
+    <div id="view-detail" class="hidden">
+      <div class="card" id="detailCard"></div>
+      <div class="card" id="historicoCard">
+        <h3 style="font-size:0.95rem;margin-bottom:12px;">Histórico</h3>
+        <div id="historico"></div>
+      </div>
+      <div class="card" id="replyCard">
+        <label>Nova mensagem</label>
+        <textarea id="replyText" placeholder="Escreva aqui..." style="min-height:70px;"></textarea>
+        <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-sm btn-outline" onclick="toggleRecReply()">🎤 Áudio</button>
+          <input type="file" id="replyFiles" multiple accept="image/*,video/*,.pdf" style="font-size:0.8rem;">
+        </div>
+        <div id="replyAudioPreview" class="audio-list"></div>
+        <div id="replyFilePreview" class="file-list"></div>
+        <button class="btn btn-primary" style="margin-top:12px;" onclick="enviarMensagem()">Enviar</button>
+        <div class="btn-row" id="clientActions">
+          <button class="btn btn-success" onclick="setStatus('Aprovado')">Aprovado</button>
+          <button class="btn btn-warning" onclick="setStatus('Em produção')">Quero alterar</button>
+        </div>
+        <div id="adminActions" class="hidden">
+          <label style="margin-top:16px;">Alterar status</label>
+          <select id="adminStatus" onchange="adminChangeStatus()">
+            <option value="Recebido">Recebido</option>
+            <option value="Em produção">Em produção</option>
+            <option value="Enviado para aprovação">Enviado para aprovação</option>
+            <option value="Aprovado">Aprovado</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-outline" style="margin-top:12px;" onclick="showView('home')">← Voltar</button>
+    </div>
+
+    <!-- ADMIN LIST -->
+    <div id="view-admin" class="hidden">
+      <div class="card">
+        <h2 style="font-size:1rem;margin-bottom:12px;">Todos os pedidos (Admin)</h2>
+        <div id="adminLista"></div>
+      </div>
+      <button class="btn btn-outline" style="margin-top:12px;" onclick="showView('home')">← Voltar</button>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script>
+    // ========== STATE & STORAGE ==========
+    const DB_NAME = 'xbrief_db';
+    const STORE = 'files';
+    let db = null;
+    let isAdmin = false;
+    let currentId = null;
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let recordedBlob = null;
+    let replyRecordedBlob = null;
+    let isRecording = false;
+    let isReplyRecording = false;
+
+    function openDB() {
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open(DB_NAME, 1);
+        req.onupgradeneeded = e => {
+          const d = e.target.result;
+          if (!d.objectStoreNames.contains(STORE)) d.createObjectStore(STORE);
+        };
+        req.onsuccess = e => { db = e.target.result; resolve(db); };
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    async function saveFile(id, blob) {
+      if (!db) await openDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE, 'readwrite');
+        tx.objectStore(STORE).put(blob, id);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
+    }
+
+    async function getFile(id) {
+      if (!db) await openDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE, 'readonly');
+        const req = tx.objectStore(STORE).get(id);
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    function getPedidos() {
+      try { return JSON.parse(localStorage.getItem('xbrief_pedidos') || '[]'); }
+      catch { return []; }
+    }
+    function savePedidos(list) {
+      localStorage.setItem('xbrief_pedidos', JSON.stringify(list));
+    }
+    function nextNumber() {
+      const list = getPedidos();
+      const max = list.reduce((m, p) => Math.max(m, p.numero || 0), 0);
+      return max + 1;
+    }
+
+    // ========== UI HELPERS ==========
+    function showView(name) {
+      ['home','new','detail','admin'].forEach(v => {
+        document.getElementById('view-' + v).classList.toggle('hidden', v !== name);
+      });
+      if (name === 'home') renderLista();
+      if (name === 'admin') renderAdminLista();
+      if (name === 'new') resetForm();
+    }
+
+    function toast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.style.display = 'block';
+      setTimeout(() => t.style.display = 'none', 2200);
+    }
+
+    function formatDate(d) {
+      if (!d) return '';
+      const dt = new Date(d);
+      return dt.toLocaleDateString('pt-BR') + ' ' + dt.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
+    }
+
+    // ========== AUDIO RECORDING ==========
+    async function toggleRec() {
+      if (isRecording) {
+        mediaRecorder.stop();
+        isRecording = false;
+        document.getElementById('recBtn').classList.remove('recording');
+        document.getElementById('recStatus').textContent = 'Áudio gravado';
+        return;
+      }
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        audioChunks = [];
+        mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+        mediaRecorder.onstop = () => {
+          recordedBlob = new Blob(audioChunks, { type: 'audio/webm' });
+          stream.getTracks().forEach(t => t.stop());
+          showAudioPreview(recordedBlob, 'audioPreview');
+        };
+        mediaRecorder.start();
+        isRecording = true;
+        document.getElementById('recBtn').classList.add('recording');
+        document.getElementById('recStatus').textContent = 'Gravando... toque para parar';
+      } catch (err) {
+        toast('Microfone não disponível');
+      }
+    }
+
+    async function toggleRecReply() {
+      if (isReplyRecording) {
+        mediaRecorder.stop();
+        isReplyRecording = false;
+        return;
+      }
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        audioChunks = [];
+        mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+        mediaRecorder.onstop = () => {
+          replyRecordedBlob = new Blob(audioChunks, { type: 'audio/webm' });
+          stream.getTracks().forEach(t => t.stop());
+          showAudioPreview(replyRecordedBlob, 'replyAudioPreview');
+        };
+        mediaRecorder.start();
+        isReplyRecording = true;
+        toast('Gravando áudio...');
+      } catch {
+        toast('Microfone não disponível');
+      }
+    }
+
+    function showAudioPreview(blob, containerId) {
+      const url = URL.createObjectURL(blob);
+      const el = document.getElementById(containerId);
+      el.innerHTML = `<div class="audio-chip"><audio controls src="${url}"></audio></div>`;
+    }
+
+    // ========== FILES ==========
+    document.getElementById('f-files').addEventListener('change', e => {
+      const list = document.getElementById('filePreview');
+      list.innerHTML = '';
+      Array.from(e.target.files).forEach(f => {
+        list.innerHTML += `<div class="file-chip">📎 ${f.name} (${(f.size/1024).toFixed(0)} KB)</div>`;
+      });
+    });
+
+    document.getElementById('replyFiles').addEventListener('change', e => {
+      const list = document.getElementById('replyFilePreview');
+      list.innerHTML = '';
+      Array.from(e.target.files).forEach(f => {
+        list.innerHTML += `<div class="file-chip">📎 ${f.name}</div>`;
+      });
+    });
+
+    // ========== CRUD ==========
+    function resetForm() {
+      document.getElementById('f-titulo').value = '';
+      document.getElementById('f-tipo').value = 'Arte';
+      document.getElementById('f-desc').value = '';
+      document.getElementById('f-prazo').value = '';
+      document.getElementById('f-obs').value = '';
+      document.getElementById('f-files').value = '';
+      document.getElementById('filePreview').innerHTML = '';
+      document.getElementById('audioPreview').innerHTML = '';
+      document.getElementById('recStatus').textContent = '';
+      recordedBlob = null;
+    }
+
+    async function enviarPedido() {
+      const titulo = document.getElementById('f-titulo').value.trim();
+      if (!titulo) { toast('Informe o título'); return; }
+      const desc = document.getElementById('f-desc').value.trim();
+      if (!desc) { toast('Explique sua ideia'); return; }
+
+      const num = nextNumber();
+      const id = 'p' + Date.now();
+      const pedido = {
+        id,
+        numero: num,
+        titulo,
+        tipo: document.getElementById('f-tipo').value,
+        descricao: desc,
+        prazo: document.getElementById('f-prazo').value || null,
+        observacao: document.getElementById('f-obs').value.trim() || null,
+        status: 'Recebido',
+        createdAt: new Date().toISOString(),
+        files: [],
+        audio: null,
+        historico: [{
+          tipo: 'system',
+          texto: 'Pedido criado',
+          at: new Date().toISOString()
+        }]
+      };
+
+      // save audio
+      if (recordedBlob) {
+        const aid = id + '_audio0';
+        await saveFile(aid, recordedBlob);
+        pedido.audio = aid;
+        pedido.historico.push({ tipo: 'client', texto: '[Áudio anexado]', at: new Date().toISOString(), audio: aid });
+      }
+
+      // save files
+      const fileInput = document.getElementById('f-files');
+      for (let i = 0; i < fileInput.files.length; i++) {
+        const f = fileInput.files[i];
+        const fid = id + '_f' + i;
+        await saveFile(fid, f);
+        pedido.files.push({ id: fid, name: f.name, type: f.type, size: f.size });
+        pedido.historico.push({ tipo: 'client', texto: `[Arquivo] ${f.name}`, at: new Date().toISOString(), file: fid });
+      }
+
+      const list = getPedidos();
+      list.unshift(pedido);
+      savePedidos(list);
+      toast('Pedido #' + String(num).padStart(3,'0') + ' criado!');
+      showView('home');
+    }
+
+    function renderLista() {
+      const list = getPedidos();
+      const el = document.getElementById('listaPedidos');
+      const empty = document.getElementById('emptyPedidos');
+      if (!list.length) {
+        el.innerHTML = '';
+        empty.classList.remove('hidden');
+        return;
+      }
+      empty.classList.add('hidden');
+      el.innerHTML = list.map(p => `
+        <div class="pedido-item" onclick="openPedido('${p.id}')">
+          <div>
+            <h3>#${String(p.numero).padStart(3,'0')} — ${p.titulo}</h3>
+            <small>${p.tipo} · ${formatDate(p.createdAt)}</small>
+          </div>
+          <span class="status-badge status-${p.status.replace(/ /g,'\\ ')}">${p.status}</span>
+        </div>
+      `).join('');
+    }
+
+    function renderAdminLista() {
+      const list = getPedidos();
+      const el = document.getElementById('adminLista');
+      if (!list.length) {
+        el.innerHTML = '<div class="empty">Nenhum pedido</div>';
+        return;
+      }
+      el.innerHTML = list.map(p => `
+        <div class="pedido-item" onclick="openPedido('${p.id}')">
+          <div>
+            <h3>#${String(p.numero).padStart(3,'0')} — ${p.titulo}</h3>
+            <small>${p.tipo} · ${p.status}</small>
+          </div>
+          <span class="status-badge status-${p.status.replace(/ /g,'\\ ')}">${p.status}</span>
+        </div>
+      `).join('');
+    }
+
+    async function openPedido(id) {
+      currentId = id;
+      const list = getPedidos();
+      const p = list.find(x => x.id === id);
+      if (!p) return;
+
+      document.getElementById('clientActions').classList.toggle('hidden', isAdmin);
+      document.getElementById('adminActions').classList.toggle('hidden', !isAdmin);
+      if (isAdmin) document.getElementById('adminStatus').value = p.status;
+
+      let filesHtml = '';
+      for (const f of (p.files || [])) {
+        const blob = await getFile(f.id);
+        if (blob) {
+          const url = URL.createObjectURL(blob);
+          filesHtml += `<div class="file-chip"><a href="${url}" download="${f.name}" target="_blank">📎 ${f.name}</a></div>`;
+        }
+      }
+
+      let audioHtml = '';
+      if (p.audio) {
+        const blob = await getFile(p.audio);
+        if (blob) {
+          const url = URL.createObjectURL(blob);
+          audioHtml = `<div class="audio-chip"><audio controls src="${url}"></audio></div>`;
+        }
+      }
+
+      document.getElementById('detailCard').innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <div>
+            <h2 style="font-size:1.15rem;">#${String(p.numero).padStart(3,'0')} — ${p.titulo}</h2>
+            <small style="color:var(--muted);">${p.tipo}</small>
+          </div>
+          <span class="status-badge status-${p.status.replace(/ /g,'\\ ')}">${p.status}</span>
+        </div>
+        <p style="margin-top:12px;white-space:pre-wrap;">${p.descricao}</p>
+        ${p.prazo ? `<p style="margin-top:8px;font-size:0.85rem;color:var(--muted);">Prazo: ${p.prazo}</p>` : ''}
+        ${p.observacao ? `<p style="margin-top:4px;font-size:0.85rem;color:var(--muted);">Obs: ${p.observacao}</p>` : ''}
+        ${audioHtml ? '<label style="margin-top:12px;">Áudio inicial</label>' + audioHtml : ''}
+        ${filesHtml ? '<label style="margin-top:12px;">Arquivos</label>' + filesHtml : ''}
+      `;
+
+      // historico
+      const histEl = document.getElementById('historico');
+      histEl.innerHTML = '';
+      for (const h of (p.historico || [])) {
+        let extra = '';
+        if (h.audio) {
+          const b = await getFile(h.audio);
+          if (b) extra = `<audio controls src="${URL.createObjectURL(b)}" style="width:100%;margin-top:6px;"></audio>`;
+        }
+        if (h.file) {
+          const b = await getFile(h.file);
+          if (b) {
+            const name = (p.files || []).find(f => f.id === h.file)?.name || 'arquivo';
+            extra = `<a href="${URL.createObjectURL(b)}" download="${name}" style="display:block;margin-top:6px;">📎 ${name}</a>`;
+          }
+        }
+        const cls = h.tipo === 'admin' ? 'msg-admin' : h.tipo === 'system' ? 'msg-system' : 'msg-client';
+        histEl.innerHTML += `<div class="msg ${cls}">${h.texto}${extra}<time>${formatDate(h.at)}</time></div>`;
+      }
+
+      // clear reply
+      document.getElementById('replyText').value = '';
+      document.getElementById('replyFiles').value = '';
+      document.getElementById('replyFilePreview').innerHTML = '';
+      document.getElementById('replyAudioPreview').innerHTML = '';
+      replyRecordedBlob = null;
+
+      showView('detail');
+    }
+
+    async function enviarMensagem() {
+      const text = document.getElementById('replyText').value.trim();
+      const files = document.getElementById('replyFiles').files;
+      if (!text && !replyRecordedBlob && !files.length) {
+        toast('Escreva algo ou anexe');
+        return;
+      }
+
+      const list = getPedidos();
+      const p = list.find(x => x.id === currentId);
+      if (!p) return;
+
+      const tipo = isAdmin ? 'admin' : 'client';
+      const entry = { tipo, texto: text || (replyRecordedBlob ? '[Áudio]' : '[Arquivo]'), at: new Date().toISOString() };
+
+      if (replyRecordedBlob) {
+        const aid = currentId + '_a' + Date.now();
+        await saveFile(aid, replyRecordedBlob);
+        entry.audio = aid;
+      }
+
+      for (let i = 0; i < files.length; i++) {
+        const f = files[i];
+        const fid = currentId + '_rf' + Date.now() + i;
+        await saveFile(fid, f);
+        p.files = p.files || [];
+        p.files.push({ id: fid, name: f.name, type: f.type, size: f.size });
+        if (i === 0 && !text && !replyRecordedBlob) entry.file = fid;
+        else p.historico.push({ tipo, texto: `[Arquivo] ${f.name}`, at: new Date().toISOString(), file: fid });
+      }
+
+      p.historico.push(entry);
+      savePedidos(list);
+      toast('Enviado');
+      openPedido(currentId);
+    }
+
+    function setStatus(status) {
+      const list = getPedidos();
+      const p = list.find(x => x.id === currentId);
+      if (!p) return;
+      p.status = status;
+      p.historico.push({ tipo: 'system', texto: 'Status: ' + status, at: new Date().toISOString() });
+      savePedidos(list);
+      toast('Status atualizado');
+      openPedido(currentId);
+    }
+
+    function adminChangeStatus() {
+      setStatus(document.getElementById('adminStatus').value);
+    }
+
+    // ========== ADMIN ==========
+    function promptAdmin() {
+      const code = prompt('Código de acesso admin:');
+      if (code === 'xbrief2026') {
+        isAdmin = true;
+        document.getElementById('adminBar').classList.remove('hidden');
+        showView('admin');
+        toast('Modo Admin ativo');
+      } else if (code !== null) {
+        toast('Código incorreto');
+      }
+    }
+    function exitAdmin() {
+      isAdmin = false;
+      document.getElementById('adminBar').classList.add('hidden');
+      showView('home');
+    }
+
+    // ========== INIT ==========
+    openDB().then(() => {
+      renderLista();
+      showView('home');
+    });
+  </script>
+</body>
+</html>
